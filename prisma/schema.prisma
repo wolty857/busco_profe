@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  alumno
+  profesor
+}
+
+model User {
+  id             Int             @id @default(autoincrement())
+  nombre         String
+  email          String          @unique
+  password       String
+  rol            Role            @default(alumno)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  teacherProfile TeacherProfile?
+  
+  reviewsGiven   Review[]        @relation("AlumnoReviews")
+  reviewsReceived Review[]       @relation("ProfesorReviews")
+}
+
+model TeacherProfile {
+  id             Int      @id @default(autoincrement())
+  user_id        Int      @unique
+  materia        String
+  bio            String?  @db.Text
+  precio_hora    Float
+  modalidad      String
+  foto           String?
+  video_url      String?
+  telefono       String?
+  titulos        Json?
+
+  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id             Int      @id @default(autoincrement())
+  profesor_id    Int
+  alumno_id      Int
+  estrellas      Int
+  comentario     String?  @db.Text
+  createdAt      DateTime @default(now())
+
+  profesor       User     @relation("ProfesorReviews", fields: [profesor_id], references: [id], onDelete: Cascade)
+  alumno         User     @relation("AlumnoReviews", fields: [alumno_id], references: [id], onDelete: Cascade)
+}
