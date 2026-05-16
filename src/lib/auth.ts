@@ -38,6 +38,7 @@ export const authOptions: NextAuthOptions = {
           id: String(user.id),
           name: user.nombre,
           email: user.email,
+          image: user.teacherProfile?.foto || null,
           rol: user.rol,
           hasProfile: !!user.teacherProfile,
         };
@@ -50,6 +51,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.rol = (user as any).rol;
         token.hasProfile = (user as any).hasProfile;
+        token.picture = user.image;
       }
       return token;
     },
@@ -58,6 +60,7 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.id;
         (session.user as any).rol = token.rol;
         (session.user as any).hasProfile = token.hasProfile;
+        session.user.image = token.picture as string | null | undefined;
       }
       return session;
     },

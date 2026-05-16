@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function HomePage() {
   const { data: session, status } = useSession();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-white">
@@ -25,25 +28,60 @@ export default function HomePage() {
             {status === "loading" ? (
               <div className="w-6 h-6 border-2 border-rosa-400/30 border-t-rosa-400 rounded-full animate-spin"></div>
             ) : session?.user ? (
-              <div className="flex items-center gap-4">
-                <div className="hidden sm:flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-rosa-400 flex items-center justify-center text-white font-bold text-sm">
-                    {session.user.name?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="text-sm">
-                    <p className="font-semibold text-black">{session.user.name}</p>
-                    <p className="text-gray-400 text-xs capitalize">
-                      {(session.user as any).rol}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  id="logout-btn"
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-black border border-gray-200 hover:border-gray-300 rounded-xl transition-all duration-200"
+              <div className="flex items-center gap-4 relative">
+                <Link
+                  href="/dashboard"
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-rosa-50 text-rosa-600 hover:bg-rosa-100 rounded-xl font-bold text-sm transition-colors"
                 >
-                  Salir
-                </button>
+                  Mi Panel
+                </Link>
+
+                <div className="relative">
+                  <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="flex items-center gap-2 focus:outline-none"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-rosa-400 border-2 border-white shadow-md flex items-center justify-center text-white font-bold text-sm overflow-hidden relative transition-transform hover:scale-105 active:scale-95">
+                      {session.user.image ? (
+                        <Image src={session.user.image} alt={session.user.name || "Usuario"} fill className="object-cover" sizes="40px" />
+                      ) : (
+                        session.user.name?.charAt(0).toUpperCase()
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Menú Desplegable */}
+                  {isMenuOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsMenuOpen(false)}
+                      ></div>
+                      <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 z-50 overflow-hidden py-2 animate-fade-in">
+                        <div className="px-4 py-3 border-b border-gray-50 mb-2">
+                          <p className="font-bold text-black text-sm truncate">{session.user.name}</p>
+                          <p className="text-xs text-gray-400 capitalize">{(session.user as any).rol}</p>
+                        </div>
+                        <Link href="/mensajes" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
+                          <span className="text-lg">💬</span> Mis Mensajes
+                        </Link>
+                        <Link href="/clases" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
+                          <span className="text-lg">📚</span> Mis Clases
+                        </Link>
+                        <Link href={`/profesores/${(session.user as any).id}`} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
+                          <span className="text-lg">👤</span> Mi perfil
+                        </Link>
+                        <div className="border-t border-gray-50 my-2"></div>
+                        <button
+                          onClick={() => signOut({ callbackUrl: "/" })}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors text-left"
+                        >
+                          <span className="text-lg">🚪</span> Cerrar Sesión
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             ) : (
               <>
@@ -85,7 +123,7 @@ export default function HomePage() {
             <span className="text-rosa-400 relative">
               profesor
               <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
-                <path d="M2 8C50 2 150 2 198 8" stroke="#F88ACE" strokeWidth="3" strokeLinecap="round" opacity="0.4"/>
+                <path d="M2 8C50 2 150 2 198 8" stroke="#F88ACE" strokeWidth="3" strokeLinecap="round" opacity="0.4" />
               </svg>
             </span>
             <br />
