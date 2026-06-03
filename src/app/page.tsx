@@ -14,13 +14,20 @@ export default function HomePage() {
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-gray-100/50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="group">
+          <Link href="/" className="group flex items-center gap-2.5">
+            <Image
+              src="/images/Logo-BuscoProfe2.svg"
+              alt="Busco Profe"
+              width={42}
+              height={42}
+              className="rounded-lg"
+              priority
+            />
             <h1 className="text-2xl font-extrabold text-black tracking-tight">
-              ¡¡Busco{" "}
+              Busco{" "}
               <span className="text-rosa-400 group-hover:text-rosa-500 transition-colors">
                 Profe
               </span>
-              !!
             </h1>
           </Link>
 
@@ -174,7 +181,7 @@ export default function HomePage() {
       {/* Footer mínimo */}
       <footer className="py-8 border-t border-gray-100">
         <p className="text-center text-sm text-gray-400 font-medium">
-          © 2024 ¡¡Busco Profe!! — Todos los derechos reservados
+          © 2024 Busco Profe — Todos los derechos reservados
         </p>
       </footer>
     </div>

@@ -25,9 +25,16 @@ export default function DashboardSidebar({ activeTab, setActiveTab, userName, us
       <aside className="hidden lg:flex flex-col w-72 bg-white border-r border-gray-100 fixed top-0 left-0 bottom-0 z-40">
         {/* Logo */}
         <div className="p-6 border-b border-gray-50">
-          <Link href="/" className="group">
+          <Link href="/" className="group flex items-center gap-2.5">
+            <Image
+              src="/images/Logo-BuscoProfe2.svg"
+              alt="Busco Profe"
+              width={38}
+              height={38}
+              className="rounded-lg"
+            />
             <h1 className="text-xl font-extrabold text-black">
-              ¡¡Busco <span className="text-rosa-400">Profe</span>!!
+              Busco <span className="text-rosa-400">Profe</span>
             </h1>
           </Link>
         </div>

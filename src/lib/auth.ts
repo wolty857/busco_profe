@@ -34,6 +34,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Contraseña incorrecta");
         }
 
+        if (!user.emailVerified) {
+          throw new Error("Debes verificar tu email para iniciar sesión. Revisa tu bandeja de entrada.");
+        }
+
         return {
           id: String(user.id),
           name: user.nombre,
@@ -61,6 +65,20 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).rol = token.rol;
         (session.user as any).hasProfile = token.hasProfile;
         session.user.image = token.picture as string | null | undefined;
+
+        // Refresh profile photo from DB to keep it current
+        try {
+          const profile = await prisma.teacherProfile.findUnique({
+            where: { user_id: Number(token.id) },
+            select: { foto: true },
+          });
+          if (profile?.foto) {
+            session.user.image = profile.foto;
+            token.picture = profile.foto;
+          }
+        } catch {
+          // Silently fail — use cached photo from token
+        }
       }
       return session;
     },

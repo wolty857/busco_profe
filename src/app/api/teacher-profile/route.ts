@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     });
 
     if (!result.success) {
-      const errors = result.error.errors.map((e) => e.message);
+      const errors = result.error.issues.map((e) => e.message);
       return NextResponse.json(
         { error: errors[0] },
         { status: 400 }
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
         foto,
         video_url,
         telefono,
-        titulos: titulos ? JSON.stringify(titulos) : null,
+        titulos: titulos || undefined,
       },
     });
 
@@ -98,10 +98,20 @@ export async function GET() {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
+      select: {
+        id: true,
+        nombre: true,
+        email: true,
+        rol: true,
         teacherProfile: true,
         reviewsReceived: {
-          include: { alumno: { select: { id: true, nombre: true } } },
+          select: {
+            id: true,
+            estrellas: true,
+            comentario: true,
+            createdAt: true,
+            alumno: { select: { id: true, nombre: true } },
+          },
           orderBy: { createdAt: "desc" },
         },
       },
@@ -111,7 +121,11 @@ export async function GET() {
       return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json({ user }, {
+      headers: {
+        "Cache-Control": "private, max-age=30, stale-while-revalidate=60",
+      },
+    });
   } catch (error) {
     console.error("Error obteniendo perfil:", error);
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });

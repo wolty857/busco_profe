@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { v4 as uuidv4 } from "uuid";
 import prisma from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations";
+import { sendVerificationEmail } from "@/lib/mail";
 
 export async function POST(request: Request) {
   try {
@@ -11,7 +13,7 @@ export async function POST(request: Request) {
     const result = registerSchema.safeParse(body);
 
     if (!result.success) {
-      const errors = result.error.errors.map((e) => e.message);
+      const errors = result.error.issues.map((e) => e.message);
       return NextResponse.json(
         { error: errors[0] },
         { status: 400 }
@@ -44,6 +46,27 @@ export async function POST(request: Request) {
         rol,
       },
     });
+
+    // Generar token de verificación
+    const token = uuidv4();
+    const expires = new Date(new Date().getTime() + 1000 * 60 * 60 * 24); // 24 horas
+
+    await prisma.verificationToken.create({
+      data: {
+        identifier: email,
+        token,
+        expires,
+      },
+    });
+
+    // Enviar correo de verificación
+    try {
+      await sendVerificationEmail({ email, token, nombre });
+    } catch (emailError) {
+      console.error("Error enviando correo de verificación:", emailError);
+      // No devolvemos error de registro si el correo falla, pero podríamos. 
+      // Por ahora continuamos y el usuario podrá pedir reenvío.
+    }
 
     return NextResponse.json(
       {

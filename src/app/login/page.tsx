@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuthStore } from "@/store/authStore";
 
 export default function LoginPage() {
@@ -62,15 +63,16 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md mx-4 animate-fade-in">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-block group">
-            <h1 className="text-4xl font-extrabold text-black tracking-tight">
-              ¡¡Busco{" "}
-              <span className="text-rosa-400 group-hover:text-rosa-500 transition-colors">
-                Profe
-              </span>
-              !!
-            </h1>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Link href="/" className="group mb-2">
+            <Image
+              src="/images/Logo-BuscoProfe2.svg"
+              alt="Busco Profe"
+              width={80}
+              height={80}
+              className="rounded-2xl shadow-lg shadow-rosa-400/10 transition-transform hover:scale-105"
+              priority
+            />
           </Link>
           <p className="text-gray-500 mt-2 text-sm font-medium">
             Inicia sesión en tu cuenta

@@ -38,8 +38,15 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
       {/* Navbar Minimalista */}
       <nav className="glass border-b border-gray-100/50 sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="font-extrabold text-xl text-black">
-            ¡¡Busco <span className="text-rosa-400">Profe</span>!!
+          <Link href="/" className="flex items-center gap-2.5 font-extrabold text-xl text-black">
+            <Image
+              src="/images/Logo-BuscoProfe2.svg"
+              alt="Busco Profe"
+              width={38}
+              height={38}
+              className="rounded-lg"
+            />
+            Busco <span className="text-rosa-400">Profe</span>
           </Link>
           <Link href="/" className="text-sm font-semibold text-gray-500 hover:text-black">
             ← Volver al inicio
@@ -55,7 +62,7 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
           {/* Avatar */}
           <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-rosa-50 border-4 border-white shadow-xl shadow-rosa-400/10 flex-shrink-0 overflow-hidden relative">
             {profile.foto ? (
-              <Image src={profile.foto} alt={teacher.nombre} fill className="object-cover" />
+              <Image src={profile.foto} alt={teacher.nombre} fill className="object-cover" sizes="(max-width: 768px) 128px, 160px" priority />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-4xl text-rosa-300 font-bold bg-gradient-to-br from-rosa-50 to-rosa-100">
                 {teacher.nombre.charAt(0).toUpperCase()}

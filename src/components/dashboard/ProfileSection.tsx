@@ -121,11 +121,11 @@ export default function ProfileSection({ userData, onUpdate }: ProfileSectionPro
         </div>
 
         <div className="p-8 pt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Field label="Nombre completo" name="nombre" value={form.nombre} editing={isEditing} onChange={(v) => setForm({ ...form, nombre: v })} />
+          <Field label="Nombre completo" name="nombre" value={form.nombre} editing={isEditing} onChange={(v: string) => setForm({ ...form, nombre: v })} />
           <Field label="Email" value={userData?.email} editing={false} disabled />
-          <Field label="Materia" name="materia" value={form.materia} editing={isEditing} onChange={(v) => setForm({ ...form, materia: v })} />
-          <Field label="Precio por hora (ARS)" name="precio_hora" value={form.precio_hora} editing={isEditing} onChange={(v) => setForm({ ...form, precio_hora: v })} type="number" />
-          <Field label="WhatsApp" name="telefono" value={form.telefono} editing={isEditing} onChange={(v) => setForm({ ...form, telefono: v })} />
+          <Field label="Materia" name="materia" value={form.materia} editing={isEditing} onChange={(v: string) => setForm({ ...form, materia: v })} />
+          <Field label="Precio por hora (ARS)" name="precio_hora" value={form.precio_hora} editing={isEditing} onChange={(v: string) => setForm({ ...form, precio_hora: v })} type="number" />
+          <Field label="WhatsApp" name="telefono" value={form.telefono} editing={isEditing} onChange={(v: string) => setForm({ ...form, telefono: v })} />
           <div>
             <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Modalidad</label>
             {isEditing ? (
