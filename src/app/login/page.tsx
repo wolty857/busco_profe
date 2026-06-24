@@ -154,11 +154,21 @@ export default function LoginPage() {
 
             {/* Error */}
             {error && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl animate-slide-down">
-                <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                </svg>
-                <span className="text-red-600 text-sm font-medium">{error}</span>
+              <div className="flex flex-col gap-2 p-3 bg-red-50 border border-red-200 rounded-xl animate-slide-down">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                  </svg>
+                  <span className="text-red-600 text-sm font-medium">{error}</span>
+                </div>
+                {error.includes("verificar tu email") && (
+                  <Link 
+                    href="/reenviar-verificacion" 
+                    className="text-sm text-red-600 font-bold hover:text-red-800 self-start ml-7 mt-1 underline underline-offset-2 transition-colors"
+                  >
+                    ¿No recibiste el correo? Solicitar uno nuevo
+                  </Link>
+                )}
               </div>
             )}
 

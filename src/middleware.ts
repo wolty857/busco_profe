@@ -6,9 +6,9 @@ export default withAuth(
     const token = req.nextauth.token;
     const pathname = req.nextUrl.pathname;
 
-    // Si es profesor sin perfil completado y no está en /completar-perfil
+    // Si cualquier usuario (profesor o alumno) no tiene perfil completado
+    // y no está en /completar-perfil, redirigir obligatoriamente
     if (
-      token?.rol === "profesor" &&
       !token?.hasProfile &&
       pathname !== "/completar-perfil" &&
       !pathname.startsWith("/api/")

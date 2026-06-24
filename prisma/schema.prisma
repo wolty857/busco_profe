@@ -23,9 +23,20 @@ model User {
   updatedAt      DateTime        @updatedAt
 
   teacherProfile TeacherProfile?
+  alumnoProfile  AlumnoProfile?
   
   reviewsGiven   Review[]        @relation("AlumnoReviews")
   reviewsReceived Review[]       @relation("ProfesorReviews")
+}
+
+model AlumnoProfile {
+  id        Int      @id @default(autoincrement())
+  user_id   Int      @unique
+  foto      String?
+  telefono  String
+  bio       String?  @db.Text
+
+  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model TeacherProfile {

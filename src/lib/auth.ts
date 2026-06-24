@@ -18,7 +18,10 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
-          include: { teacherProfile: true },
+          include: {
+            teacherProfile: true,
+            alumnoProfile: true,
+          },
         });
 
         if (!user) {
@@ -38,13 +41,19 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Debes verificar tu email para iniciar sesión. Revisa tu bandeja de entrada.");
         }
 
+        // hasProfile depende del rol
+        const hasProfile =
+          user.rol === "profesor"
+            ? !!user.teacherProfile
+            : !!user.alumnoProfile;
+
         return {
           id: String(user.id),
           name: user.nombre,
           email: user.email,
-          image: user.teacherProfile?.foto || null,
+          image: user.teacherProfile?.foto || user.alumnoProfile?.foto || null,
           rol: user.rol,
-          hasProfile: !!user.teacherProfile,
+          hasProfile,
         };
       },
     }),
@@ -68,13 +77,25 @@ export const authOptions: NextAuthOptions = {
 
         // Refresh profile photo from DB to keep it current
         try {
-          const profile = await prisma.teacherProfile.findUnique({
-            where: { user_id: Number(token.id) },
-            select: { foto: true },
-          });
-          if (profile?.foto) {
-            session.user.image = profile.foto;
-            token.picture = profile.foto;
+          const userId = Number(token.id);
+          if (token.rol === "profesor") {
+            const profile = await prisma.teacherProfile.findUnique({
+              where: { user_id: userId },
+              select: { foto: true },
+            });
+            if (profile?.foto) {
+              session.user.image = profile.foto;
+              token.picture = profile.foto;
+            }
+          } else {
+            const profile = await prisma.alumnoProfile.findUnique({
+              where: { user_id: userId },
+              select: { foto: true },
+            });
+            if (profile?.foto) {
+              session.user.image = profile.foto;
+              token.picture = profile.foto;
+            }
           }
         } catch {
           // Silently fail — use cached photo from token

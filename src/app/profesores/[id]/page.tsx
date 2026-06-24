@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { DollarSign, MapPin, Monitor, RefreshCcw, Award, Star, FileText } from "lucide-react";
 
 export default async function TeacherProfilePage({ params }: { params: { id: string } }) {
   const teacherId = parseInt(params.id);
@@ -91,11 +92,11 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
                 <span className="text-gray-400 font-medium">({reviews.length} reseñas)</span>
               </div>
               <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-xl">
-                <span className="text-xl">💰</span>
+                <DollarSign size={20} className="text-gray-500" />
                 <span className="text-black">${profile.precio_hora}/hr</span>
               </div>
               <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-xl">
-                <span className="text-xl">{profile.modalidad === 'presencial' ? '🏫' : profile.modalidad === 'virtual' ? '💻' : '🔄'}</span>
+                {profile.modalidad === 'presencial' ? <MapPin size={20} className="text-gray-500" /> : profile.modalidad === 'virtual' ? <Monitor size={20} className="text-gray-500" /> : <RefreshCcw size={20} className="text-gray-500" />}
                 <span className="capitalize text-black">{profile.modalidad}</span>
               </div>
             </div>
@@ -151,7 +152,7 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
             
             {reviews.length === 0 ? (
               <div className="text-center py-10 bg-gray-50 rounded-2xl border border-gray-100 border-dashed">
-                <span className="text-4xl mb-3 block">⭐</span>
+                <Star size={36} className="text-yellow-400 mx-auto mb-3" />
                 <p className="text-gray-500 font-medium">Aún no hay reseñas para este profesor.</p>
               </div>
             ) : (
@@ -185,7 +186,7 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
           {titulos.length > 0 && (
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
               <h3 className="font-bold text-black mb-4 flex items-center gap-2">
-                <span>🎓</span> Títulos y Certificados
+                <Award size={20} className="text-rosa-500" /> Títulos y Certificados
               </h3>
               <div className="space-y-3">
                 {titulos.map((titulo: any, idx: number) => (

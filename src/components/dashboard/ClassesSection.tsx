@@ -1,4 +1,5 @@
 "use client";
+import { BookOpen, DollarSign, MapPin, Monitor, RefreshCcw, MessageCircle } from "lucide-react";
 
 interface ClassesSectionProps {
   profile: any;
@@ -21,21 +22,21 @@ export default function ClassesSection({ profile }: ClassesSectionProps) {
           <div className="p-6">
             <div className="flex items-start gap-5 p-5 bg-gradient-to-r from-rosa-50/50 to-white rounded-2xl border border-rosa-100/50">
               <div className="w-14 h-14 rounded-2xl bg-rosa-100 flex items-center justify-center text-2xl flex-shrink-0">
-                📖
+                <BookOpen size={28} className="text-rosa-500" />
               </div>
               <div className="flex-1 min-w-0">
                 <h4 className="font-bold text-black text-lg">{profile.materia}</h4>
                 <p className="text-gray-500 text-sm mt-1 line-clamp-2">{profile.bio}</p>
                 <div className="flex flex-wrap items-center gap-3 mt-3">
-                  <span className="bg-white px-3 py-1 rounded-lg text-xs font-semibold text-gray-600 border border-gray-100">
-                    💰 ${profile.precio_hora}/hr
+                  <span className="bg-white px-3 py-1 rounded-lg text-xs font-semibold text-gray-600 border border-gray-100 flex items-center">
+                    <DollarSign size={14} className="mr-1" /> ${profile.precio_hora}/hr
                   </span>
-                  <span className="bg-white px-3 py-1 rounded-lg text-xs font-semibold text-gray-600 border border-gray-100 capitalize">
-                    {profile.modalidad === "presencial" ? "🏫" : profile.modalidad === "virtual" ? "💻" : "🔄"} {profile.modalidad}
+                  <span className="bg-white px-3 py-1 rounded-lg text-xs font-semibold text-gray-600 border border-gray-100 capitalize flex items-center">
+                    {profile.modalidad === "presencial" ? <MapPin size={14} className="mr-1" /> : profile.modalidad === "virtual" ? <Monitor size={14} className="mr-1" /> : <RefreshCcw size={14} className="mr-1" />} {profile.modalidad}
                   </span>
                   {profile.telefono && (
-                    <span className="bg-white px-3 py-1 rounded-lg text-xs font-semibold text-gray-600 border border-gray-100">
-                      📱 WhatsApp activo
+                    <span className="bg-white px-3 py-1 rounded-lg text-xs font-semibold text-gray-600 border border-gray-100 flex items-center">
+                      <MessageCircle size={14} className="mr-1" /> WhatsApp activo
                     </span>
                   )}
                 </div>

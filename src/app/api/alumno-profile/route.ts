@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { teacherProfileSchema } from "@/lib/validations";
+import { alumnoProfileSchema } from "@/lib/validations";
 import { sanitizeText } from "@/lib/sanitize";
 
 export async function POST(request: Request) {
@@ -19,21 +19,21 @@ export async function POST(request: Request) {
     const userId = Number((session.user as any).id);
     const userRol = (session.user as any).rol;
 
-    if (userRol !== "profesor") {
+    if (userRol !== "alumno") {
       return NextResponse.json(
-        { error: "Solo los profesores pueden crear un perfil profesional" },
+        { error: "Solo los alumnos pueden crear este tipo de perfil" },
         { status: 403 }
       );
     }
 
     // Verificar si ya tiene perfil
-    const existingProfile = await prisma.teacherProfile.findUnique({
+    const existingProfile = await prisma.alumnoProfile.findUnique({
       where: { user_id: userId },
     });
 
     if (existingProfile) {
       return NextResponse.json(
-        { error: "Ya tienes un perfil profesional creado" },
+        { error: "Ya tienes un perfil creado" },
         { status: 409 }
       );
     }
@@ -41,10 +41,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Validar datos con Zod
-    const result = teacherProfileSchema.safeParse({
-      ...body,
-      precio_hora: Number(body.precio_hora),
-    });
+    const result = alumnoProfileSchema.safeParse(body);
 
     if (!result.success) {
       const errors = result.error.issues.map((e) => e.message);
@@ -54,35 +51,30 @@ export async function POST(request: Request) {
       );
     }
 
-    const { materia, bio, precio_hora, modalidad, foto, video_url, telefono, titulos } = result.data;
+    const { foto, telefono, bio } = result.data;
 
-    // Sanitizar bio contra XSS
-    const sanitizedBio = sanitizeText(bio);
+    // Sanitizar bio si se proporcionó
+    const sanitizedBio = bio ? sanitizeText(bio) : null;
 
     // Crear el perfil
-    const profile = await prisma.teacherProfile.create({
+    const profile = await prisma.alumnoProfile.create({
       data: {
         user_id: userId,
-        materia,
-        bio: sanitizedBio,
-        precio_hora,
-        modalidad,
-        foto,
-        video_url,
+        foto: foto || null,
         telefono,
-        titulos: titulos || undefined,
+        bio: sanitizedBio,
       },
     });
 
     return NextResponse.json(
       {
-        message: "Perfil profesional creado exitosamente",
+        message: "Perfil creado exitosamente",
         profile,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Error creando perfil:", error);
+    console.error("Error creando perfil de alumno:", error);
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -107,17 +99,7 @@ export async function GET() {
         nombre: true,
         email: true,
         rol: true,
-        teacherProfile: true,
-        reviewsReceived: {
-          select: {
-            id: true,
-            estrellas: true,
-            comentario: true,
-            createdAt: true,
-            alumno: { select: { id: true, nombre: true } },
-          },
-          orderBy: { createdAt: "desc" },
-        },
+        alumnoProfile: true,
       },
     });
 
@@ -125,13 +107,9 @@ export async function GET() {
       return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
     }
 
-    return NextResponse.json({ user }, {
-      headers: {
-        "Cache-Control": "private, max-age=30, stale-while-revalidate=60",
-      },
-    });
+    return NextResponse.json({ user });
   } catch (error) {
-    console.error("Error obteniendo perfil:", error);
+    console.error("Error obteniendo perfil de alumno:", error);
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
   }
 }
@@ -155,18 +133,14 @@ export async function PUT(request: Request) {
       });
     }
 
-    // Update teacher profile if fields are provided
+    // Update alumno profile fields
     const profileFields: any = {};
-    const allowedFields = ["materia", "bio", "precio_hora", "modalidad", "foto", "video_url", "telefono", "titulos"];
-    
+    const allowedFields = ["foto", "telefono", "bio"];
+
     for (const field of allowedFields) {
       if (body[field] !== undefined) {
-        if (field === "precio_hora") {
-          profileFields[field] = Number(body[field]);
-        } else if (field === "titulos") {
-          profileFields[field] = JSON.stringify(body[field]);
-        } else if (field === "bio") {
-          profileFields[field] = sanitizeText(body[field]);
+        if (field === "bio") {
+          profileFields[field] = body[field] ? sanitizeText(body[field]) : null;
         } else {
           profileFields[field] = body[field];
         }
@@ -174,7 +148,7 @@ export async function PUT(request: Request) {
     }
 
     if (Object.keys(profileFields).length > 0) {
-      await prisma.teacherProfile.update({
+      await prisma.alumnoProfile.update({
         where: { user_id: userId },
         data: profileFields,
       });
@@ -182,7 +156,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ message: "Perfil actualizado exitosamente" });
   } catch (error) {
-    console.error("Error actualizando perfil:", error);
+    console.error("Error actualizando perfil de alumno:", error);
     return NextResponse.json({ error: "Error interno del servidor" }, { status: 500 });
   }
 }

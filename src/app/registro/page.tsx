@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { GraduationCap, Briefcase } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 
 export default function RegistroPage() {
@@ -20,6 +21,34 @@ export default function RegistroPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [step, setStep] = useState(1); // 1: elegir rol, 2: formulario
+  const [isVerified, setIsVerified] = useState(false);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (success && !isVerified) {
+      interval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/check-verification?email=${encodeURIComponent(formData.email)}`);
+          const data = await res.json();
+          if (data.verified) {
+            setIsVerified(true);
+            setSuccess("¡Cuenta verificada exitosamente! Redirigiendo al inicio de sesión...");
+            clearInterval(interval);
+            setTimeout(() => {
+              router.push("/login");
+            }, 3000);
+          }
+        } catch (error) {
+          console.error("Error comprobando verificación:", error);
+        }
+      }, 3000);
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [success, isVerified, formData.email, router, setSuccess]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,11 +81,6 @@ export default function RegistroPage() {
       }
 
       setSuccess("¡Cuenta creada! Hemos enviado un enlace a tu correo. Revísalo para activar tu cuenta.");
-
-      // Redirigir al login después de unos segundos
-      setTimeout(() => {
-        router.push("/login");
-      }, 5000);
     } catch {
       setError("Error al crear la cuenta. Intenta de nuevo.");
     } finally {
@@ -142,8 +166,12 @@ export default function RegistroPage() {
               {/* Badge del rol seleccionado */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 bg-rosa-50 text-rosa-500 text-xs font-bold rounded-full uppercase tracking-wide">
-                    {formData.rol === "alumno" ? "👨‍🎓 Alumno" : "👨‍🏫 Profesor"}
+                  <span className="flex items-center gap-1.5 px-3 py-1 bg-rosa-50 text-rosa-500 text-xs font-bold rounded-full uppercase tracking-wide">
+                    {formData.rol === "alumno" ? (
+                      <><GraduationCap size={14} strokeWidth={2.5} /> Alumno</>
+                    ) : (
+                      <><Briefcase size={14} strokeWidth={2.5} /> Profesor</>
+                    )}
                   </span>
                 </div>
                 <button
@@ -155,7 +183,8 @@ export default function RegistroPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              {!success ? (
+                <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Nombre */}
                 <div>
                   <label
@@ -290,15 +319,6 @@ export default function RegistroPage() {
                   </div>
                 )}
 
-                {/* Success */}
-                {success && (
-                  <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl animate-slide-down">
-                    <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-green-600 text-sm font-medium">{success}</span>
-                  </div>
-                )}
 
                 {/* Submit */}
                 <button
@@ -318,6 +338,39 @@ export default function RegistroPage() {
                   <div className="absolute inset-0 bg-gradient-to-r from-rosa-400/0 via-rosa-400/10 to-rosa-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                 </button>
               </form>
+              ) : (
+                <div className="text-center py-6 animate-fade-in">
+                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    {isVerified ? "¡Cuenta Verificada!" : "¡Revisa tu correo!"}
+                  </h3>
+                  <p className="text-gray-600 mb-8 px-4">
+                    {success}
+                  </p>
+                  
+                  {!isVerified && (
+                    <div className="space-y-3">
+                      <Link
+                        href="/login"
+                        className="block w-full py-3.5 bg-black text-white font-semibold rounded-xl hover:bg-gray-900 transition-colors"
+                      >
+                        Ir a Iniciar Sesión
+                      </Link>
+                      <Link
+                        href="/reenviar-verificacion"
+                        className="block w-full py-3.5 bg-white text-rosa-500 font-semibold rounded-xl border-2 border-rosa-100 hover:border-rosa-400 hover:bg-rosa-50 transition-colors"
+                      >
+                        Solicitar reenvío del enlace
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+
             </div>
           )}
 

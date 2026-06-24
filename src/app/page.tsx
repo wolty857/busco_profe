@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
+import { MessageSquare, BookOpen, User, LogOut } from "lucide-react";
 
 export default function HomePage() {
   const { data: session, status } = useSession();
@@ -37,7 +38,7 @@ export default function HomePage() {
             ) : session?.user ? (
               <div className="flex items-center gap-4 relative">
                 <Link
-                  href="/dashboard"
+                  href={!(session.user as any)?.hasProfile ? "/completar-perfil" : "/dashboard"}
                   className="hidden sm:flex items-center gap-2 px-4 py-2 bg-rosa-50 text-rosa-600 hover:bg-rosa-100 rounded-xl font-bold text-sm transition-colors"
                 >
                   Mi Panel
@@ -70,20 +71,20 @@ export default function HomePage() {
                           <p className="text-xs text-gray-400 capitalize">{(session.user as any).rol}</p>
                         </div>
                         <Link href="/mensajes" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
-                          <span className="text-lg">💬</span> Mis Mensajes
+                          <MessageSquare size={18} strokeWidth={2.5} /> Mis Mensajes
                         </Link>
                         <Link href="/clases" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
-                          <span className="text-lg">📚</span> Mis Clases
+                          <BookOpen size={18} strokeWidth={2.5} /> Mis Clases
                         </Link>
-                        <Link href={`/profesores/${(session.user as any).id}`} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
-                          <span className="text-lg">👤</span> Mi perfil
+                        <Link href={!(session.user as any)?.hasProfile ? "/completar-perfil" : ((session.user as any)?.rol === "profesor" ? `/profesores/${(session.user as any).id}` : "/dashboard")} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
+                          <User size={18} strokeWidth={2.5} /> Mi perfil
                         </Link>
                         <div className="border-t border-gray-50 my-2"></div>
                         <button
                           onClick={() => signOut({ callbackUrl: "/" })}
                           className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 transition-colors text-left"
                         >
-                          <span className="text-lg">🚪</span> Cerrar Sesión
+                          <LogOut size={18} strokeWidth={2.5} /> Cerrar Sesión
                         </button>
                       </div>
                     </>

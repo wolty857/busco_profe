@@ -1,12 +1,13 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense, useEffect } from "react";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const success = searchParams.get("success");
   const error = searchParams.get("error");
   const token = searchParams.get("token");
@@ -17,6 +18,15 @@ function VerifyEmailContent() {
       window.location.href = `/api/verify-email?token=${token}`;
     }
   }, [token, success, error]);
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        router.push("/login");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success, router]);
 
   return (
     <div className="w-full max-w-md mx-4 animate-fade-in text-center">

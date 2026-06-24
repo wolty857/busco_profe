@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
+import { User, MessageSquare, BookOpen, LogOut, Home } from "lucide-react";
 
 interface SidebarProps {
   activeTab: string;
@@ -13,9 +14,9 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { id: "perfil", label: "Mi Perfil", icon: "👤" },
-  { id: "mensajes", label: "Mis Mensajes", icon: "💬" },
-  { id: "clases", label: "Mis Clases", icon: "📚" },
+  { id: "perfil", label: "Mi Perfil", icon: <User size={20} strokeWidth={2.5} /> },
+  { id: "mensajes", label: "Mis Mensajes", icon: <MessageSquare size={20} strokeWidth={2.5} /> },
+  { id: "clases", label: "Mis Clases", icon: <BookOpen size={20} strokeWidth={2.5} /> },
 ];
 
 export default function DashboardSidebar({ activeTab, setActiveTab, userName, userImage, userRole }: SidebarProps) {
@@ -68,7 +69,7 @@ export default function DashboardSidebar({ activeTab, setActiveTab, userName, us
                   : "text-gray-500 hover:text-black hover:bg-gray-50"
               }`}
             >
-              <span className="text-lg">{item.icon}</span>
+              <span className="flex items-center justify-center w-6 h-6">{item.icon}</span>
               {item.label}
             </button>
           ))}
@@ -77,13 +78,13 @@ export default function DashboardSidebar({ activeTab, setActiveTab, userName, us
         {/* Footer */}
         <div className="p-4 border-t border-gray-50 space-y-1">
           <Link href="/" className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-gray-500 hover:text-black hover:bg-gray-50 transition-colors">
-            <span className="text-lg">🏠</span> Ir al inicio
+            <span className="flex items-center justify-center w-6 h-6"><Home size={20} strokeWidth={2.5} /></span> Ir al inicio
           </Link>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 transition-colors text-left"
           >
-            <span className="text-lg">🚪</span> Cerrar Sesión
+            <span className="flex items-center justify-center w-6 h-6"><LogOut size={20} strokeWidth={2.5} /></span> Cerrar Sesión
           </button>
         </div>
       </aside>

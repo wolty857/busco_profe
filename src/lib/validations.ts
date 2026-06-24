@@ -43,17 +43,39 @@ export const teacherProfileSchema = z.object({
     .max(2000, "La biografía no puede superar los 2000 caracteres"),
   precio_hora: z
     .number()
+    .int("El precio debe ser un número entero (sin decimales)")
     .min(1, "El precio debe ser mayor a 0")
     .max(100000, "El precio no puede superar los 100.000"),
   modalidad: z.enum(["presencial", "virtual", "ambas"], {
     errorMap: () => ({ message: "Selecciona una modalidad válida" }),
   }),
-  foto: z.string().optional(),
+  foto: z
+    .string()
+    .url("Debes subir una foto de perfil válida"),
   video_url: z.string().optional(),
-  telefono: z.string().optional(),
+  telefono: z
+    .string()
+    .regex(/^\d{7,15}$/, "Ingresa un número de WhatsApp válido (solo dígitos, entre 7 y 15 caracteres)"),
   titulos: z.any().optional(),
+});
+
+export const alumnoProfileSchema = z.object({
+  foto: z
+    .string()
+    .url("La URL de la foto no es válida")
+    .optional()
+    .or(z.literal("")),
+  telefono: z
+    .string()
+    .regex(/^\d{7,15}$/, "Ingresa un número de WhatsApp válido (solo dígitos, entre 7 y 15 caracteres)"),
+  bio: z
+    .string()
+    .max(500, "La biografía no puede superar los 500 caracteres")
+    .optional()
+    .or(z.literal("")),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type TeacherProfileInput = z.infer<typeof teacherProfileSchema>;
+export type AlumnoProfileInput = z.infer<typeof alumnoProfileSchema>;
