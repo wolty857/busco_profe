@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/features/auth/store/authStore";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -40,7 +40,7 @@ export default function LoginPage() {
         const res = await fetch("/api/auth/session");
         const session = await res.json();
 
-        if (session?.user?.rol === "profesor" && !session?.user?.hasProfile) {
+        if (session?.user?.rol === "teacher" && !session?.user?.hasProfile) {
           router.push("/completar-perfil");
         } else {
           router.push("/");

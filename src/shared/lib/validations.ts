@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const registerSchema = z.object({
-  nombre: z
+  name: z
     .string()
     .min(2, "El nombre debe tener al menos 2 caracteres")
     .max(100, "El nombre no puede superar los 100 caracteres"),
@@ -15,9 +15,7 @@ export const registerSchema = z.object({
     .max(100, "La contraseña no puede superar los 100 caracteres"),
   confirmPassword: z
     .string(),
-  rol: z.enum(["alumno", "profesor"], {
-    errorMap: () => ({ message: "Selecciona un rol válido" }),
-  }),
+  role: z.enum(["student", "teacher"], "Selecciona un rol válido"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Las contraseñas no coinciden",
   path: ["confirmPassword"],
@@ -33,39 +31,37 @@ export const loginSchema = z.object({
 });
 
 export const teacherProfileSchema = z.object({
-  materia: z
+  subject: z
     .string()
-    .min(2, "La materia debe tener al menos 2 caracteres")
-    .max(100, "La materia no puede superar los 100 caracteres"),
+    .min(2, "La subject debe tener al menos 2 caracteres")
+    .max(100, "La subject no puede superar los 100 caracteres"),
   bio: z
     .string()
     .min(20, "La biografía debe tener al menos 20 caracteres")
     .max(2000, "La biografía no puede superar los 2000 caracteres"),
-  precio_hora: z
+  hourlyRate: z
     .number()
     .int("El precio debe ser un número entero (sin decimales)")
     .min(1, "El precio debe ser mayor a 0")
     .max(100000, "El precio no puede superar los 100.000"),
-  modalidad: z.enum(["presencial", "virtual", "ambas"], {
-    errorMap: () => ({ message: "Selecciona una modalidad válida" }),
-  }),
-  foto: z
+  modality: z.enum(["presencial", "virtual", "ambas"], "Selecciona una modality válida"),
+  photo: z
     .string()
-    .url("Debes subir una foto de perfil válida"),
+    .url("Debes subir una photo de perfil válida"),
   video_url: z.string().optional(),
-  telefono: z
+  phone: z
     .string()
     .regex(/^\d{7,15}$/, "Ingresa un número de WhatsApp válido (solo dígitos, entre 7 y 15 caracteres)"),
-  titulos: z.any().optional(),
+  titles: z.any().optional(),
 });
 
-export const alumnoProfileSchema = z.object({
-  foto: z
+export const studentProfileSchema = z.object({
+  photo: z
     .string()
-    .url("La URL de la foto no es válida")
+    .url("La URL de la photo no es válida")
     .optional()
     .or(z.literal("")),
-  telefono: z
+  phone: z
     .string()
     .regex(/^\d{7,15}$/, "Ingresa un número de WhatsApp válido (solo dígitos, entre 7 y 15 caracteres)"),
   bio: z
@@ -78,4 +74,4 @@ export const alumnoProfileSchema = z.object({
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type TeacherProfileInput = z.infer<typeof teacherProfileSchema>;
-export type AlumnoProfileInput = z.infer<typeof alumnoProfileSchema>;
+export type AlumnoProfileInput = z.infer<typeof studentProfileSchema>;

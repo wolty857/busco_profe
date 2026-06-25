@@ -8,62 +8,62 @@ datasource db {
 }
 
 enum Role {
-  alumno
-  profesor
+  student
+  teacher
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  nombre         String
-  email          String          @unique
-  password       String
-  rol            Role            @default(alumno)
-  emailVerified  DateTime?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id            Int       @id @default(autoincrement())
+  name          String
+  email         String    @unique
+  password      String
+  role          Role      @default(student)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   teacherProfile TeacherProfile?
-  alumnoProfile  AlumnoProfile?
-  
-  reviewsGiven   Review[]        @relation("AlumnoReviews")
-  reviewsReceived Review[]       @relation("ProfesorReviews")
+  studentProfile StudentProfile?
+
+  reviewsGiven    Review[] @relation("StudentReviews")
+  reviewsReceived Review[] @relation("TeacherReviews")
 }
 
-model AlumnoProfile {
-  id        Int      @id @default(autoincrement())
-  user_id   Int      @unique
-  foto      String?
-  telefono  String
-  bio       String?  @db.Text
+model StudentProfile {
+  id      Int     @id @default(autoincrement())
+  user_id Int     @unique
+  photo   String?
+  phone   String
+  bio     String? @db.Text
 
-  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model TeacherProfile {
-  id             Int      @id @default(autoincrement())
-  user_id        Int      @unique
-  materia        String
-  bio            String?  @db.Text
-  precio_hora    Float
-  modalidad      String
-  foto           String?
-  video_url      String?
-  telefono       String?
-  titulos        Json?
+  id         Int     @id @default(autoincrement())
+  user_id    Int     @unique
+  subject    String
+  bio        String? @db.Text
+  hourlyRate Float
+  modality   String
+  photo      String?
+  video_url  String?
+  phone      String?
+  titles     Json?
 
-  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Review {
-  id             Int      @id @default(autoincrement())
-  profesor_id    Int
-  alumno_id      Int
-  estrellas      Int
-  comentario     String?  @db.Text
-  createdAt      DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  teacherId Int
+  studentId Int
+  stars     Int
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
 
-  profesor       User     @relation("ProfesorReviews", fields: [profesor_id], references: [id], onDelete: Cascade)
-  alumno         User     @relation("AlumnoReviews", fields: [alumno_id], references: [id], onDelete: Cascade)
+  teacher User @relation("TeacherReviews", fields: [teacherId], references: [id], onDelete: Cascade)
+  student User @relation("StudentReviews", fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {

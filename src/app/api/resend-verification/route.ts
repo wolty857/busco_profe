@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import prisma from "@/lib/prisma";
-import { sendVerificationEmail } from "@/lib/mail";
+import prisma from "@/shared/lib/prisma";
+import { sendVerificationEmail } from "@/shared/lib/mail";
 import { z } from "zod";
 
 const resendSchema = z.object({
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       });
     }
 
-    await sendVerificationEmail({ email, token, nombre: user.nombre });
+    await sendVerificationEmail({ email, token, name: user.name });
 
     return NextResponse.json({ message: "Correo de verificación reenviado exitosamente." }, { status: 200 });
   } catch (error) {

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma";
-import { alumnoProfileSchema } from "@/lib/validations";
-import { sanitizeText } from "@/lib/sanitize";
+import { authOptions } from "@/features/auth/lib/auth";
+import prisma from "@/shared/lib/prisma";
+import { studentProfileSchema } from "@/shared/lib/validations";
+import { sanitizeText } from "@/shared/lib/sanitize";
 
 export async function POST(request: Request) {
   try {
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const userId = Number((session.user as any).id);
     const userRol = (session.user as any).rol;
 
-    if (userRol !== "alumno") {
+    if (userRol !== "student") {
       return NextResponse.json(
         { error: "Solo los alumnos pueden crear este tipo de perfil" },
         { status: 403 }
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     }
 
     // Verificar si ya tiene perfil
-    const existingProfile = await prisma.alumnoProfile.findUnique({
+    const existingProfile = await prisma.studentProfile.findUnique({
       where: { user_id: userId },
     });
 
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Validar datos con Zod
-    const result = alumnoProfileSchema.safeParse(body);
+    const result = studentProfileSchema.safeParse(body);
 
     if (!result.success) {
       const errors = result.error.issues.map((e) => e.message);
@@ -51,17 +51,17 @@ export async function POST(request: Request) {
       );
     }
 
-    const { foto, telefono, bio } = result.data;
+    const { photo, phone, bio } = result.data;
 
     // Sanitizar bio si se proporcionó
     const sanitizedBio = bio ? sanitizeText(bio) : null;
 
     // Crear el perfil
-    const profile = await prisma.alumnoProfile.create({
+    const profile = await prisma.studentProfile.create({
       data: {
         user_id: userId,
-        foto: foto || null,
-        telefono,
+        photo: photo || null,
+        phone,
         bio: sanitizedBio,
       },
     });
@@ -96,10 +96,10 @@ export async function GET() {
       where: { id: userId },
       select: {
         id: true,
-        nombre: true,
+        name: true,
         email: true,
-        rol: true,
-        alumnoProfile: true,
+        role: true,
+        studentProfile: true,
       },
     });
 
@@ -126,10 +126,10 @@ export async function PUT(request: Request) {
     const body = await request.json();
 
     // Update user name if provided
-    if (body.nombre) {
+    if (body.name) {
       await prisma.user.update({
         where: { id: userId },
-        data: { nombre: body.nombre },
+        data: { name: body.name },
       });
     }
 
@@ -148,7 +148,7 @@ export async function PUT(request: Request) {
     }
 
     if (Object.keys(profileFields).length > 0) {
-      await prisma.alumnoProfile.update({
+      await prisma.studentProfile.update({
         where: { user_id: userId },
         data: profileFields,
       });

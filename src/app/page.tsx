@@ -68,7 +68,7 @@ export default function HomePage() {
                       <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 z-50 overflow-hidden py-2 animate-fade-in">
                         <div className="px-4 py-3 border-b border-gray-50 mb-2">
                           <p className="font-bold text-black text-sm truncate">{session.user.name}</p>
-                          <p className="text-xs text-gray-400 capitalize">{(session.user as any).rol}</p>
+                          <p className="text-xs text-gray-400 capitalize">{(session.user as any).role}</p>
                         </div>
                         <Link href="/mensajes" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
                           <MessageSquare size={18} strokeWidth={2.5} /> Mis Mensajes
@@ -76,7 +76,7 @@ export default function HomePage() {
                         <Link href="/clases" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
                           <BookOpen size={18} strokeWidth={2.5} /> Mis Clases
                         </Link>
-                        <Link href={!(session.user as any)?.hasProfile ? "/completar-perfil" : ((session.user as any)?.rol === "profesor" ? `/profesores/${(session.user as any).id}` : "/dashboard")} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
+                        <Link href={!(session.user as any)?.hasProfile ? "/completar-perfil" : ((session.user as any)?.rol === "teacher" ? `/profesores/${(session.user as any).id}` : "/dashboard")} className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black hover:bg-gray-50 transition-colors">
                           <User size={18} strokeWidth={2.5} /> Mi perfil
                         </Link>
                         <div className="border-t border-gray-50 my-2"></div>
@@ -140,7 +140,7 @@ export default function HomePage() {
 
           <p className="text-gray-500 text-lg sm:text-xl mt-6 max-w-2xl mx-auto leading-relaxed animate-slide-up font-medium">
             Conectamos alumnos con profesores particulares verificados.
-            Clases presenciales y virtuales en cualquier materia.
+            Clases presenciales y virtuales en cualquier subject.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 animate-slide-up">

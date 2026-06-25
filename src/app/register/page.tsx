@@ -6,21 +6,21 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { GraduationCap, Briefcase } from "lucide-react";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/features/auth/store/authStore";
 
 export default function RegistroPage() {
   const router = useRouter();
   const { isLoading, error, success, setLoading, setError, setSuccess, clearMessages } =
     useAuthStore();
   const [formData, setFormData] = useState({
-    nombre: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    rol: "",
+    role: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [step, setStep] = useState(1); // 1: elegir rol, 2: formulario
+  const [step, setStep] = useState(1); // 1: elegir role, 2: formulario
   const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
@@ -55,8 +55,8 @@ export default function RegistroPage() {
     clearMessages();
   };
 
-  const selectRole = (rol: string) => {
-    setFormData({ ...formData, rol });
+  const selectRole = (role: string) => {
+    setFormData({ ...formData, role });
     setStep(2);
     clearMessages();
   };
@@ -120,7 +120,7 @@ export default function RegistroPage() {
             <div className="space-y-4 animate-fade-in">
               <button
                 id="rol-alumno"
-                onClick={() => selectRole("alumno")}
+                onClick={() => selectRole("student")}
                 className="w-full p-5 rounded-xl border-2 border-gray-100 hover:border-rosa-400 transition-all duration-300 text-left group hover:shadow-lg hover:shadow-rosa-400/5 active:scale-[0.98]"
               >
                 <div className="flex items-start gap-4">
@@ -140,7 +140,7 @@ export default function RegistroPage() {
 
               <button
                 id="rol-profesor"
-                onClick={() => selectRole("profesor")}
+                onClick={() => selectRole("teacher")}
                 className="w-full p-5 rounded-xl border-2 border-gray-100 hover:border-rosa-400 transition-all duration-300 text-left group hover:shadow-lg hover:shadow-rosa-400/5 active:scale-[0.98]"
               >
                 <div className="flex items-start gap-4">
@@ -167,7 +167,7 @@ export default function RegistroPage() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <span className="flex items-center gap-1.5 px-3 py-1 bg-rosa-50 text-rosa-500 text-xs font-bold rounded-full uppercase tracking-wide">
-                    {formData.rol === "alumno" ? (
+                    {formData.role === "student" ? (
                       <><GraduationCap size={14} strokeWidth={2.5} /> Alumno</>
                     ) : (
                       <><Briefcase size={14} strokeWidth={2.5} /> Profesor</>
@@ -204,7 +204,7 @@ export default function RegistroPage() {
                       name="nombre"
                       type="text"
                       required
-                      value={formData.nombre}
+                      value={formData.name}
                       onChange={handleChange}
                       className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-rosa-400 focus:ring-2 focus:ring-rosa-400/20 transition-all duration-200 text-black placeholder:text-gray-400 bg-white/50"
                       placeholder="Tu nombre completo"

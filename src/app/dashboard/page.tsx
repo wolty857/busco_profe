@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import DashboardSidebar from "@/components/dashboard/Sidebar";
-import ProfileSection from "@/components/dashboard/ProfileSection";
-import MessagesSection from "@/components/dashboard/MessagesSection";
-import ClassesSection from "@/components/dashboard/ClassesSection";
+import DashboardSidebar from "@/features/dashboard/components/Sidebar";
+import ProfileSection from "@/features/dashboard/components/ProfileSection";
+import MessagesSection from "@/features/dashboard/components/MessagesSection";
+import ClassesSection from "@/features/dashboard/components/ClassesSection";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -50,7 +50,7 @@ export default function DashboardPage() {
   const profile = userData?.teacherProfile;
   const reviews = userData?.reviewsReceived || [];
   const avgRating = reviews.length > 0
-    ? (reviews.reduce((a: number, r: any) => a + r.estrellas, 0) / reviews.length).toFixed(1)
+    ? (reviews.reduce((a: number, r: any) => a + r.stars, 0) / reviews.length).toFixed(1)
     : "0.0";
 
   return (
@@ -58,9 +58,9 @@ export default function DashboardPage() {
       <DashboardSidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        userName={userData?.nombre}
-        userImage={profile?.foto}
-        userRole={userData?.rol}
+        userName={userData?.name}
+        userImage={profile?.photo}
+        userRole={userData?.role}
       />
 
       <main className="flex-1 lg:ml-72">
@@ -85,8 +85,8 @@ export default function DashboardPage() {
               {[
                 { label: "Valoración", value: `${avgRating} ★`, color: "bg-yellow-50 text-yellow-600" },
                 { label: "Reseñas", value: reviews.length, color: "bg-blue-50 text-blue-600" },
-                { label: "Precio/hr", value: `$${profile?.precio_hora || 0}`, color: "bg-green-50 text-green-600" },
-                { label: "Modalidad", value: profile?.modalidad || "—", color: "bg-rosa-50 text-rosa-500" },
+                { label: "Precio/hr", value: `$${profile?.hourlyRate || 0}`, color: "bg-green-50 text-green-600" },
+                { label: "Modalidad", value: profile?.modality || "—", color: "bg-rosa-50 text-rosa-500" },
               ].map((s) => (
                 <div key={s.label} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{s.label}</p>

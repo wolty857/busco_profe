@@ -17,13 +17,13 @@ export default function ProfileSection({ userData, onUpdate }: ProfileSectionPro
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [form, setForm] = useState({
-    nombre: userData?.nombre || "",
-    materia: profile?.materia || "",
+    name: userData?.nombre || "",
+    subject: profile?.subject || "",
     bio: profile?.bio || "",
-    precio_hora: profile?.precio_hora || "",
-    modalidad: profile?.modalidad || "",
-    telefono: profile?.telefono || "",
-    foto: profile?.foto || "",
+    hourlyRate: profile?.hourlyRate || "",
+    modality: profile?.modality || "",
+    phone: profile?.phone || "",
+    photo: profile?.photo || "",
   });
 
   const handleSave = async () => {
@@ -40,8 +40,8 @@ export default function ProfileSection({ userData, onUpdate }: ProfileSectionPro
         setIsEditing(false);
         onUpdate({
           ...userData,
-          nombre: form.nombre,
-          teacherProfile: { ...profile, ...form, precio_hora: Number(form.precio_hora) },
+          name: form.name,
+          teacherProfile: { ...profile, ...form, hourlyRate: Number(form.hourlyRate) },
         });
         setTimeout(() => setSuccessMsg(""), 3000);
       }
@@ -54,7 +54,7 @@ export default function ProfileSection({ userData, onUpdate }: ProfileSectionPro
 
   const handlePhotoUpload = (result: any) => {
     if (result.info?.secure_url) {
-      setForm({ ...form, foto: result.info.secure_url });
+      setForm({ ...form, photo: result.info.secure_url });
     }
   };
 
@@ -72,11 +72,11 @@ export default function ProfileSection({ userData, onUpdate }: ProfileSectionPro
           <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5">
             <div className="relative group -mb-10">
               <div className="w-28 h-28 rounded-2xl bg-rosa-100 border-4 border-white shadow-lg overflow-hidden relative">
-                {form.foto ? (
-                  <Image src={form.foto} alt="Perfil" fill className="object-cover" sizes="112px" />
+                {form.photo ? (
+                  <Image src={form.photo} alt="Perfil" fill className="object-cover" sizes="112px" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-3xl text-rosa-300 font-bold">
-                    {form.nombre?.charAt(0)?.toUpperCase()}
+                    {form.name?.charAt(0)?.toUpperCase()}
                   </div>
                 )}
               </div>
@@ -95,8 +95,8 @@ export default function ProfileSection({ userData, onUpdate }: ProfileSectionPro
               )}
             </div>
             <div className="text-center sm:text-left pb-4 -mb-10">
-              <h2 className="text-xl font-extrabold text-black">{form.nombre}</h2>
-              <p className="text-gray-400 text-sm font-medium">Profesor de {form.materia}</p>
+              <h2 className="text-xl font-extrabold text-black">{form.name}</h2>
+              <p className="text-gray-400 text-sm font-medium">Profesor de {form.subject}</p>
             </div>
             <div className="sm:ml-auto pb-4 -mb-10">
               {!isEditing ? (
@@ -121,25 +121,25 @@ export default function ProfileSection({ userData, onUpdate }: ProfileSectionPro
         </div>
 
         <div className="p-8 pt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Field label="Nombre completo" name="nombre" value={form.nombre} editing={isEditing} onChange={(v: string) => setForm({ ...form, nombre: v })} />
+          <Field label="Nombre completo" name="nombre" value={form.name} editing={isEditing} onChange={(v: string) => setForm({ ...form, name: v })} />
           <Field label="Email" value={userData?.email} editing={false} disabled />
-          <Field label="Materia" name="materia" value={form.materia} editing={isEditing} onChange={(v: string) => setForm({ ...form, materia: v })} />
-          <Field label="Precio por hora (ARS)" name="precio_hora" value={form.precio_hora} editing={isEditing} onChange={(v: string) => setForm({ ...form, precio_hora: v })} type="number" />
-          <Field label="WhatsApp" name="telefono" value={form.telefono} editing={isEditing} onChange={(v: string) => setForm({ ...form, telefono: v })} />
+          <Field label="Materia" name="materia" value={form.subject} editing={isEditing} onChange={(v: string) => setForm({ ...form, subject: v })} />
+          <Field label="Precio por hora (ARS)" name="precio_hora" value={form.hourlyRate} editing={isEditing} onChange={(v: string) => setForm({ ...form, hourlyRate: v })} type="number" />
+          <Field label="WhatsApp" name="telefono" value={form.phone} editing={isEditing} onChange={(v: string) => setForm({ ...form, phone: v })} />
           <div>
             <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Modalidad</label>
             {isEditing ? (
               <div className="flex gap-2">
                 {["presencial", "virtual", "ambas"].map((m) => (
-                  <button key={m} type="button" onClick={() => setForm({ ...form, modalidad: m })}
+                  <button key={m} type="button" onClick={() => setForm({ ...form, modality: m })}
                     className={`flex-1 py-2.5 rounded-xl text-xs font-bold border transition-all capitalize ${
-                      form.modalidad === m ? "border-rosa-400 bg-rosa-50 text-rosa-600" : "border-gray-200 text-gray-500 hover:border-gray-300"
+                      form.modality === m ? "border-rosa-400 bg-rosa-50 text-rosa-600" : "border-gray-200 text-gray-500 hover:border-gray-300"
                     }`}
                   >{m}</button>
                 ))}
               </div>
             ) : (
-              <p className="text-black font-semibold capitalize">{form.modalidad || "—"}</p>
+              <p className="text-black font-semibold capitalize">{form.modality || "—"}</p>
             )}
           </div>
           <div className="md:col-span-2">
@@ -168,18 +168,18 @@ export default function ProfileSection({ userData, onUpdate }: ProfileSectionPro
             {reviews.map((r: any) => (
               <div key={r.id} className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
                 <div className="w-10 h-10 rounded-full bg-rosa-100 flex items-center justify-center text-rosa-500 font-bold text-sm flex-shrink-0">
-                  {r.alumno.nombre.charAt(0)}
+                  {r.alumno.name.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="font-bold text-black text-sm">{r.alumno.nombre}</p>
+                    <p className="font-bold text-black text-sm">{r.alumno.name}</p>
                     <div className="flex text-yellow-400 text-sm">
                       {[...Array(5)].map((_, i) => (
-                        <span key={i} className={i < r.estrellas ? "text-yellow-400" : "text-gray-200"}>★</span>
+                        <span key={i} className={i < r.stars ? "text-yellow-400" : "text-gray-200"}>★</span>
                       ))}
                     </div>
                   </div>
-                  {r.comentario && <p className="text-gray-600 text-sm">{r.comentario}</p>}
+                  {r.comment && <p className="text-gray-600 text-sm">{r.comment}</p>}
                   <p className="text-xs text-gray-400 mt-1">{new Date(r.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>

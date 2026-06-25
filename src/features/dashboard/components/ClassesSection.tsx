@@ -25,16 +25,16 @@ export default function ClassesSection({ profile }: ClassesSectionProps) {
                 <BookOpen size={28} className="text-rosa-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="font-bold text-black text-lg">{profile.materia}</h4>
+                <h4 className="font-bold text-black text-lg">{profile.subject}</h4>
                 <p className="text-gray-500 text-sm mt-1 line-clamp-2">{profile.bio}</p>
                 <div className="flex flex-wrap items-center gap-3 mt-3">
                   <span className="bg-white px-3 py-1 rounded-lg text-xs font-semibold text-gray-600 border border-gray-100 flex items-center">
-                    <DollarSign size={14} className="mr-1" /> ${profile.precio_hora}/hr
+                    <DollarSign size={14} className="mr-1" /> ${profile.hourlyRate}/hr
                   </span>
                   <span className="bg-white px-3 py-1 rounded-lg text-xs font-semibold text-gray-600 border border-gray-100 capitalize flex items-center">
-                    {profile.modalidad === "presencial" ? <MapPin size={14} className="mr-1" /> : profile.modalidad === "virtual" ? <Monitor size={14} className="mr-1" /> : <RefreshCcw size={14} className="mr-1" />} {profile.modalidad}
+                    {profile.modality === "presencial" ? <MapPin size={14} className="mr-1" /> : profile.modality === "virtual" ? <Monitor size={14} className="mr-1" /> : <RefreshCcw size={14} className="mr-1" />} {profile.modality}
                   </span>
-                  {profile.telefono && (
+                  {profile.phone && (
                     <span className="bg-white px-3 py-1 rounded-lg text-xs font-semibold text-gray-600 border border-gray-100 flex items-center">
                       <MessageCircle size={14} className="mr-1" /> WhatsApp activo
                     </span>
@@ -53,7 +53,7 @@ export default function ClassesSection({ profile }: ClassesSectionProps) {
           {[
             { icon: "📅", title: "Agenda de clases", desc: "Organiza tu calendario de clases con tus alumnos" },
             { icon: "📊", title: "Estadísticas", desc: "Visualiza tus métricas de contacto y conversiones" },
-            { icon: "🏷️", title: "Multi-materia", desc: "Publica anuncios en más de una materia" },
+            { icon: "🏷️", title: "Multi-subject", desc: "Publica anuncios en más de una subject" },
             { icon: "⭐", title: "Destacar anuncio", desc: "Posiciona tu perfil en las primeras búsquedas" },
           ].map((item) => (
             <div key={item.title} className="p-5 rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 hover:bg-gray-50 transition-colors">

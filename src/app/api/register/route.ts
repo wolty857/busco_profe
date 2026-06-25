@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
-import prisma from "@/lib/prisma";
-import { registerSchema } from "@/lib/validations";
-import { sendVerificationEmail } from "@/lib/mail";
+import prisma from "@/shared/lib/prisma";
+import { registerSchema } from "@/shared/lib/validations";
+import { sendVerificationEmail } from "@/shared/lib/mail";
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { nombre, email, password, rol } = result.data;
+    const { name, email, password, role } = result.data;
 
     // Verificar si el email ya existe
     const existingUser = await prisma.user.findUnique({
@@ -40,10 +40,10 @@ export async function POST(request: Request) {
     // Crear el usuario
     const user = await prisma.user.create({
       data: {
-        nombre,
+        name,
         email,
         password: hashedPassword,
-        rol,
+        role,
       },
     });
 
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
 
     // Enviar correo de verificación
     try {
-      await sendVerificationEmail({ email, token, nombre });
+      await sendVerificationEmail({ email, token, name });
     } catch (emailError) {
       console.error("Error enviando correo de verificación:", emailError);
       // No devolvemos error de registro si el correo falla, pero podríamos. 
@@ -73,9 +73,9 @@ export async function POST(request: Request) {
         message: "Cuenta creada exitosamente",
         user: {
           id: user.id,
-          nombre: user.nombre,
+          name: user.name,
           email: user.email,
-          rol: user.rol,
+          role: user.role,
         },
       },
       { status: 201 }

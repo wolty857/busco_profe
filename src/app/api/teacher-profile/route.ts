@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma";
-import { teacherProfileSchema } from "@/lib/validations";
-import { sanitizeText } from "@/lib/sanitize";
+import { authOptions } from "@/features/auth/lib/auth";
+import prisma from "@/shared/lib/prisma";
+import { teacherProfileSchema } from "@/shared/lib/validations";
+import { sanitizeText } from "@/shared/lib/sanitize";
 
 export async function POST(request: Request) {
   try {
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const userId = Number((session.user as any).id);
     const userRol = (session.user as any).rol;
 
-    if (userRol !== "profesor") {
+    if (userRol !== "teacher") {
       return NextResponse.json(
         { error: "Solo los profesores pueden crear un perfil profesional" },
         { status: 403 }
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     // Validar datos con Zod
     const result = teacherProfileSchema.safeParse({
       ...body,
-      precio_hora: Number(body.precio_hora),
+      hourlyRate: Number(body.hourlyRate),
     });
 
     if (!result.success) {
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { materia, bio, precio_hora, modalidad, foto, video_url, telefono, titulos } = result.data;
+    const { subject, bio, hourlyRate, modality, photo, video_url, phone, titles } = result.data;
 
     // Sanitizar bio contra XSS
     const sanitizedBio = sanitizeText(bio);
@@ -63,14 +63,14 @@ export async function POST(request: Request) {
     const profile = await prisma.teacherProfile.create({
       data: {
         user_id: userId,
-        materia,
+        subject,
         bio: sanitizedBio,
-        precio_hora,
-        modalidad,
-        foto,
+        hourlyRate,
+        modality,
+        photo,
         video_url,
-        telefono,
-        titulos: titulos || undefined,
+        phone,
+        titles: titles || undefined,
       },
     });
 
@@ -104,17 +104,17 @@ export async function GET() {
       where: { id: userId },
       select: {
         id: true,
-        nombre: true,
+        name: true,
         email: true,
-        rol: true,
+        role: true,
         teacherProfile: true,
         reviewsReceived: {
           select: {
             id: true,
-            estrellas: true,
-            comentario: true,
+            stars: true,
+            comment: true,
             createdAt: true,
-            alumno: { select: { id: true, nombre: true } },
+            student: { select: { id: true, name: true } },
           },
           orderBy: { createdAt: "desc" },
         },
@@ -148,10 +148,10 @@ export async function PUT(request: Request) {
     const body = await request.json();
 
     // Update user name if provided
-    if (body.nombre) {
+    if (body.name) {
       await prisma.user.update({
         where: { id: userId },
-        data: { nombre: body.nombre },
+        data: { name: body.name },
       });
     }
 

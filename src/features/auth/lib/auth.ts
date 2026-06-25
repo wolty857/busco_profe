@@ -1,7 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import prisma from "@/lib/prisma";
+import prisma from "@/shared/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
           include: {
             teacherProfile: true,
-            alumnoProfile: true,
+            studentProfile: true,
           },
         });
 
@@ -43,16 +43,16 @@ export const authOptions: NextAuthOptions = {
 
         // hasProfile depende del rol
         const hasProfile =
-          user.rol === "profesor"
+          user.role === "teacher"
             ? !!user.teacherProfile
-            : !!user.alumnoProfile;
+            : !!user.studentProfile;
 
         return {
           id: String(user.id),
-          name: user.nombre,
+          name: user.name,
           email: user.email,
-          image: user.teacherProfile?.foto || user.alumnoProfile?.foto || null,
-          rol: user.rol,
+          image: user.teacherProfile?.photo || user.studentProfile?.photo || null,
+          role: user.role,
           hasProfile,
         };
       },
@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.rol = (user as any).rol;
+        token.role = (user as any).rol;
         token.hasProfile = (user as any).hasProfile;
         token.picture = user.image;
       }
@@ -71,30 +71,30 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.id;
-        (session.user as any).rol = token.rol;
+        (session.user as any).rol = token.role;
         (session.user as any).hasProfile = token.hasProfile;
         session.user.image = token.picture as string | null | undefined;
 
         // Refresh profile photo from DB to keep it current
         try {
           const userId = Number(token.id);
-          if (token.rol === "profesor") {
+          if (token.role === "teacher") {
             const profile = await prisma.teacherProfile.findUnique({
               where: { user_id: userId },
-              select: { foto: true },
+              select: { photo: true },
             });
-            if (profile?.foto) {
-              session.user.image = profile.foto;
-              token.picture = profile.foto;
+            if (profile?.photo) {
+              session.user.image = profile.photo;
+              token.picture = profile.photo;
             }
           } else {
-            const profile = await prisma.alumnoProfile.findUnique({
+            const profile = await prisma.studentProfile.findUnique({
               where: { user_id: userId },
-              select: { foto: true },
+              select: { photo: true },
             });
-            if (profile?.foto) {
-              session.user.image = profile.foto;
-              token.picture = profile.foto;
+            if (profile?.photo) {
+              session.user.image = profile.photo;
+              token.picture = profile.photo;
             }
           }
         } catch {

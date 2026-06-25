@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/features/auth/store/authStore";
 import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { GraduationCap, Paperclip, Video, Award, Rocket, User, Phone, FileText, Camera } from "lucide-react";
@@ -15,17 +15,17 @@ export default function CompletarPerfilPage() {
     useAuthStore();
 
   const userRol = (session?.user as any)?.rol;
-  const isProfesor = userRol === "profesor";
+  const isProfesor = userRol === "teacher";
 
   const [formData, setFormData] = useState({
-    materia: "",
+    subject: "",
     bio: "",
-    precio_hora: "",
-    modalidad: "",
-    telefono: "",
-    foto: "",
+    hourlyRate: "",
+    modality: "",
+    phone: "",
+    photo: "",
     video_url: "",
-    titulos: [] as { name: string; url: string }[],
+    titles: [] as { name: string; url: string }[],
   });
 
   const [charCount, setCharCount] = useState(0);
@@ -55,7 +55,7 @@ export default function CompletarPerfilPage() {
 
   const handleUploadFoto = (result: any) => {
     if (result.info?.secure_url) {
-      setFormData({ ...formData, foto: result.info.secure_url });
+      setFormData({ ...formData, photo: result.info.secure_url });
     }
   };
 
@@ -69,7 +69,7 @@ export default function CompletarPerfilPage() {
     if (result.info?.secure_url) {
       setFormData({ 
         ...formData, 
-        titulos: [...formData.titulos, { name: result.info.original_filename || "Certificado", url: result.info.secure_url }] 
+        titles: [...formData.titles, { name: result.info.original_filename || "Certificado", url: result.info.secure_url }] 
       });
     }
   };
@@ -82,16 +82,16 @@ export default function CompletarPerfilPage() {
     try {
       // Validaciones del lado del cliente
       if (isProfesor) {
-        if (!formData.foto) {
-          setError("Debes subir una foto de perfil.");
+        if (!formData.photo) {
+          setError("Debes subir una photo de perfil.");
           return;
         }
-        if (!formData.telefono.match(/^\d{7,15}$/)) {
+        if (!formData.phone.match(/^\d{7,15}$/)) {
           setError("Ingresa un número de WhatsApp válido (solo dígitos, entre 7 y 15 caracteres).");
           return;
         }
       } else {
-        if (!formData.telefono.match(/^\d{7,15}$/)) {
+        if (!formData.phone.match(/^\d{7,15}$/)) {
           setError("Ingresa un número de WhatsApp válido (solo dígitos, entre 7 y 15 caracteres).");
           return;
         }
@@ -102,11 +102,11 @@ export default function CompletarPerfilPage() {
       const payload = isProfesor
         ? {
             ...formData,
-            precio_hora: Number(formData.precio_hora),
+            hourlyRate: Number(formData.hourlyRate),
           }
         : {
-            foto: formData.foto || "",
-            telefono: formData.telefono,
+            photo: formData.photo || "",
+            phone: formData.phone,
             bio: formData.bio || "",
           };
 
@@ -182,8 +182,8 @@ export default function CompletarPerfilPage() {
             {/* Foto de Perfil (Ambos roles) */}
             <div className="flex flex-col items-center gap-4">
               <div className="w-32 h-32 rounded-full border-4 border-gray-100 overflow-hidden bg-gray-50 flex items-center justify-center relative group">
-                {formData.foto ? (
-                  <Image src={formData.foto} alt="Perfil" fill className="object-cover" />
+                {formData.photo ? (
+                  <Image src={formData.photo} alt="Perfil" fill className="object-cover" />
                 ) : (
                   <svg className="w-10 h-10 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                 )}
@@ -205,7 +205,7 @@ export default function CompletarPerfilPage() {
                   </CldUploadWidget>
                 </div>
               </div>
-              {!formData.foto && (
+              {!formData.photo && (
                 <CldUploadWidget 
                   uploadPreset="busco_profe" 
                   onSuccess={handleUploadFoto} 
@@ -219,7 +219,7 @@ export default function CompletarPerfilPage() {
                 >
                   {({ open }) => (
                     <button type="button" onClick={() => open()} className="flex items-center gap-2 text-sm font-semibold text-rosa-500 hover:text-rosa-600">
-                      <Camera size={16} /> Subir foto de perfil {!isProfesor && <span className="text-gray-400 font-normal">(Opcional)</span>}
+                      <Camera size={16} /> Subir photo de perfil {!isProfesor && <span className="text-gray-400 font-normal">(Opcional)</span>}
                     </button>
                   )}
                 </CldUploadWidget>
@@ -237,7 +237,7 @@ export default function CompletarPerfilPage() {
                       name="materia"
                       type="text"
                       required
-                      value={formData.materia}
+                      value={formData.subject}
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rosa-400 focus:ring-2 focus:ring-rosa-400/20 text-black bg-white/50"
                       placeholder="Ej: Matemáticas"
@@ -253,7 +253,7 @@ export default function CompletarPerfilPage() {
                       name="telefono"
                       type="text"
                       required
-                      value={formData.telefono}
+                      value={formData.phone}
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rosa-400 focus:ring-2 focus:ring-rosa-400/20 text-black bg-white/50"
                       placeholder="Ej: 5491144556677"
@@ -296,7 +296,7 @@ export default function CompletarPerfilPage() {
                         required
                         min="1"
                         step="1"
-                        value={formData.precio_hora}
+                        value={formData.hourlyRate}
                         onChange={handleChange}
                         className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-rosa-400 focus:ring-2 focus:ring-rosa-400/20 text-black bg-white/50"
                         placeholder="5000"
@@ -316,9 +316,9 @@ export default function CompletarPerfilPage() {
                         <button
                           key={option.value}
                           type="button"
-                          onClick={() => setFormData({ ...formData, modalidad: option.value })}
+                          onClick={() => setFormData({ ...formData, modality: option.value })}
                           className={`py-2 px-1 rounded-xl border transition-all text-xs font-semibold ${
-                            formData.modalidad === option.value
+                            formData.modality === option.value
                               ? "border-rosa-400 bg-rosa-50 text-rosa-600"
                               : "border-gray-200 text-gray-500 hover:border-gray-300"
                           }`}
@@ -359,7 +359,7 @@ export default function CompletarPerfilPage() {
                             <div className="w-10 h-10 bg-rosa-50 rounded-lg flex items-center justify-center text-rosa-500 group-hover:scale-110 transition-transform"><Award size={20} /></div>
                             <div className="text-left">
                               <p className="font-semibold text-sm text-black">Títulos o certificados</p>
-                              <p className="text-xs text-gray-500">{formData.titulos.length > 0 ? `${formData.titulos.length} archivos subidos` : "Máx. 10MB por archivo"}</p>
+                              <p className="text-xs text-gray-500">{formData.titles.length > 0 ? `${formData.titles.length} archivos subidos` : "Máx. 10MB por archivo"}</p>
                             </div>
                           </div>
                           <span className="text-rosa-400 font-bold text-xl">+</span>
@@ -383,7 +383,7 @@ export default function CompletarPerfilPage() {
                     name="telefono"
                     type="text"
                     required
-                    value={formData.telefono}
+                    value={formData.phone}
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-rosa-400 focus:ring-2 focus:ring-rosa-400/20 text-black bg-white/50"
                     placeholder="Ej: 5491144556677"
@@ -429,7 +429,7 @@ export default function CompletarPerfilPage() {
             {/* Submit */}
             <button
               type="submit"
-              disabled={isLoading || (isProfesor && !formData.modalidad)}
+              disabled={isLoading || (isProfesor && !formData.modality)}
               className="w-full py-4 bg-black text-white font-bold rounded-xl hover:bg-gray-900 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Guardando..." : (

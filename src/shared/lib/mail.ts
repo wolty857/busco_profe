@@ -3,10 +3,10 @@ import nodemailer from "nodemailer";
 interface SendVerificationEmailParams {
   email: string;
   token: string;
-  nombre: string;
+  name: string;
 }
 
-export async function sendVerificationEmail({ email, token, nombre }: SendVerificationEmailParams) {
+export async function sendVerificationEmail({ email, token, name }: SendVerificationEmailParams) {
   // Configuración del transporter usando SMTP (ej. Gmail)
   // En desarrollo se pueden dejar vacíos y nodemailer usará Ethereal o fallará suavemente si no hay credenciales
   const transporter = nodemailer.createTransport({
@@ -25,7 +25,7 @@ export async function sendVerificationEmail({ email, token, nombre }: SendVerifi
     subject: "Verifica tu cuenta en Busco Profe",
     html: `
       <div style="font-family: Arial, sans-serif; max-w-md mx-auto p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-        <h2 style="color: #F472B6; font-size: 24px; font-weight: bold; margin-bottom: 16px;">¡Hola, ${nombre}!</h2>
+        <h2 style="color: #F472B6; font-size: 24px; font-weight: bold; margin-bottom: 16px;">¡Hola, ${name}!</h2>
         <p style="color: #4B5563; font-size: 16px; margin-bottom: 24px;">
           Gracias por registrarte en Busco Profe. Para activar tu cuenta y comenzar a utilizar la plataforma, por favor verifica tu correo electrónico haciendo clic en el siguiente botón:
         </p>

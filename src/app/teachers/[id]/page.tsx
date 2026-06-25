@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import prisma from "@/shared/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,11 +12,11 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
   }
 
   const teacher = await prisma.user.findUnique({
-    where: { id: teacherId, rol: "profesor" },
+    where: { id: teacherId, role: "teacher" },
     include: {
       teacherProfile: true,
       reviewsReceived: {
-        include: { alumno: true },
+        include: { student: true },
         orderBy: { createdAt: "desc" }
       },
     },
@@ -29,10 +29,10 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
   const profile = teacher.teacherProfile;
   const reviews = teacher.reviewsReceived;
   const avgRating = reviews.length > 0 
-    ? reviews.reduce((acc, r) => acc + r.estrellas, 0) / reviews.length 
+    ? reviews.reduce((acc: number, r: any) => acc + r.stars, 0) / reviews.length 
     : 0;
   
-  const titulos = profile.titulos ? JSON.parse(profile.titulos as string) : [];
+  const titles = profile.titles ? JSON.parse(profile.titles as string) : [];
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -62,11 +62,11 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
           
           {/* Avatar */}
           <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-rosa-50 border-4 border-white shadow-xl shadow-rosa-400/10 flex-shrink-0 overflow-hidden relative">
-            {profile.foto ? (
-              <Image src={profile.foto} alt={teacher.nombre} fill className="object-cover" sizes="(max-width: 768px) 128px, 160px" priority />
+            {profile.photo ? (
+              <Image src={profile.photo} alt={teacher.name} fill className="object-cover" sizes="(max-width: 768px) 128px, 160px" priority />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-4xl text-rosa-300 font-bold bg-gradient-to-br from-rosa-50 to-rosa-100">
-                {teacher.nombre.charAt(0).toUpperCase()}
+                {teacher.name.charAt(0).toUpperCase()}
               </div>
             )}
           </div>
@@ -74,7 +74,7 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
           {/* Info Básica */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl md:text-4xl font-extrabold text-black">{teacher.nombre}</h1>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-black">{teacher.name}</h1>
               <span className="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-xs font-bold uppercase tracking-wide flex items-center gap-1">
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                 Verificado
@@ -82,7 +82,7 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
             </div>
             
             <p className="text-lg md:text-xl text-gray-500 font-medium mb-4">
-              Profesor de <span className="text-rosa-500 font-bold">{profile.materia}</span>
+              Profesor de <span className="text-rosa-500 font-bold">{profile.subject}</span>
             </p>
 
             <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-gray-600">
@@ -93,11 +93,11 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
               </div>
               <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-xl">
                 <DollarSign size={20} className="text-gray-500" />
-                <span className="text-black">${profile.precio_hora}/hr</span>
+                <span className="text-black">${profile.hourlyRate}/hr</span>
               </div>
               <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-xl">
-                {profile.modalidad === 'presencial' ? <MapPin size={20} className="text-gray-500" /> : profile.modalidad === 'virtual' ? <Monitor size={20} className="text-gray-500" /> : <RefreshCcw size={20} className="text-gray-500" />}
-                <span className="capitalize text-black">{profile.modalidad}</span>
+                {profile.modality === 'presencial' ? <MapPin size={20} className="text-gray-500" /> : profile.modality === 'virtual' ? <Monitor size={20} className="text-gray-500" /> : <RefreshCcw size={20} className="text-gray-500" />}
+                <span className="capitalize text-black">{profile.modality}</span>
               </div>
             </div>
           </div>
@@ -105,7 +105,7 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
           {/* CTA WhatsApp Fijo Desktop */}
           <div className="hidden md:block">
             <a 
-              href={`https://wa.me/${profile.telefono}?text=Hola%20${teacher.nombre},%20vi%20tu%20perfil%20en%20Busco%20Profe%20y%20me%20gustaría%20tomar%20clases%20de%20${profile.materia}.`}
+              href={`https://wa.me/${profile.phone}?text=Hola%20${teacher.name},%20vi%20tu%20perfil%20en%20Busco%20Profe%20y%20me%20gustaría%20tomar%20clases%20de%20${profile.subject}.`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-[#25D366] text-white font-bold rounded-2xl hover:bg-[#20bd5a] active:scale-95 transition-all duration-200 shadow-xl shadow-[#25D366]/20"
@@ -140,7 +140,7 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
                   src={profile.video_url} 
                   controls 
                   className="w-full h-full object-cover"
-                  poster={profile.foto || ""}
+                  poster={profile.photo || ""}
                 />
               </div>
             </section>
@@ -157,18 +157,18 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
               </div>
             ) : (
               <div className="space-y-6">
-                {reviews.map((review) => (
-                  <div key={review.id} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
+                {reviews.map((review: any) => (
+                  <div key={review.id} className="p-6 bg-white border border-gray-100/50 rounded-2xl hover:shadow-lg transition-shadow duration-300">
                     <div className="flex items-center justify-between mb-2">
-                      <div className="font-bold text-black">{review.alumno.nombre}</div>
+                      <div className="font-bold text-black">{review.student.name}</div>
                       <div className="flex text-yellow-400">
                         {[...Array(5)].map((_, i) => (
-                          <span key={i} className={i < review.estrellas ? "text-yellow-400" : "text-gray-200"}>★</span>
+                          <span key={i} className={i < review.stars ? "text-yellow-400" : "text-gray-200"}>★</span>
                         ))}
                       </div>
                     </div>
-                    {review.comentario && (
-                      <p className="text-gray-600 text-sm mt-2">{review.comentario}</p>
+                    {review.comment && (
+                      <p className="text-gray-600 text-sm mt-2">{review.comment}</p>
                     )}
                     <p className="text-xs text-gray-400 mt-3">{new Date(review.createdAt).toLocaleDateString()}</p>
                   </div>
@@ -183,13 +183,13 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
         <div className="space-y-6">
           
           {/* Títulos / Certificados */}
-          {titulos.length > 0 && (
+          {titles.length > 0 && (
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
               <h3 className="font-bold text-black mb-4 flex items-center gap-2">
                 <Award size={20} className="text-rosa-500" /> Títulos y Certificados
               </h3>
               <div className="space-y-3">
-                {titulos.map((titulo: any, idx: number) => (
+                {titles.map((titulo: any, idx: number) => (
                   <a 
                     key={idx}
                     href={titulo.url} 
@@ -222,7 +222,7 @@ export default async function TeacherProfilePage({ params }: { params: { id: str
       {/* CTA WhatsApp Fijo Mobile */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200 z-50">
         <a 
-          href={`https://wa.me/${profile.telefono}?text=Hola%20${teacher.nombre},%20vi%20tu%20perfil%20en%20Busco%20Profe%20y%20me%20gustaría%20tomar%20clases%20de%20${profile.materia}.`}
+          href={`https://wa.me/${profile.phone}?text=Hola%20${teacher.name},%20vi%20tu%20perfil%20en%20Busco%20Profe%20y%20me%20gustaría%20tomar%20clases%20de%20${profile.subject}.`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 w-full py-4 bg-[#25D366] text-white font-bold rounded-xl active:scale-95 transition-transform shadow-lg shadow-[#25D366]/20"
